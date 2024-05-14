@@ -54,6 +54,6 @@ while True:
                 result = subprocess.run(
                     ["iptables", "-A", "INPUT", "-s", ip, "-p", "tcp", "--dport", port, "-j", "DROP"],
                     stdout=subprocess.PIPE)
-                if result.check_returncode() == 0:
+                if result.returncode == 0:
                     print('Successfully added {} to prohibit access to the {} port firewall rule.'.format(ip, port))
     time.sleep(30)
