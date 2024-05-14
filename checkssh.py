@@ -38,23 +38,20 @@ while True:
     result = subprocess.run(["lastb"], stdout=subprocess.PIPE)
     output = result.stdout.decode("utf-8").strip()
     output = output.split('\n')
-    try:
-        for o in output:
-            ip = o.split()[2]
-            if check.get(ip) is None:
-                check[ip] = 1
-            else:
-                check[ip] = check.get(ip) + 1
-        for ip, count in check.items():
-            if count > 10:
-                result = subprocess.run(["iptables-save"], stdout=subprocess.PIPE)
-                output = result.stdout.decode("utf-8").strip()
-                if ip not in output:
-                    result = subprocess.run(
-                        ["iptables", "-A", "INPUT", "-s", ip, "-p", "tcp", "--dport", port, "-j", "DROP"],
-                        stdout=subprocess.PIPE)
-                    if result.check_returncode() == 0:
-                        print('Successfully added {} to prohibit access to the {} port firewall rule.'.format(ip, port))
-    except Exception as e:
-        print(e)
+    for o in output:
+        ip = o.split()[2]
+        if check.get(ip) is None:
+            check[ip] = 1
+        else:
+            check[ip] = check.get(ip) + 1
+    for ip, count in check.items():
+        if count > 10:
+            result = subprocess.run(["iptables-save"], stdout=subprocess.PIPE)
+            output = result.stdout.decode("utf-8").strip()
+            if ip not in output:
+                result = subprocess.run(
+                    ["iptables", "-A", "INPUT", "-s", ip, "-p", "tcp", "--dport", port, "-j", "DROP"],
+                    stdout=subprocess.PIPE)
+                if result.check_returncode() == 0:
+                    print('Successfully added {} to prohibit access to the {} port firewall rule.'.format(ip, port))
     time.sleep(30)
