@@ -5,7 +5,12 @@ import os
 import subprocess
 import logging
 
-logging.basicConfig(filename='banip.log', level=logging.INFO)
+logging.basicConfig(filename='banip.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+
+logging.getLogger('').addHandler(console)
 
 current_system = platform.system()
 
