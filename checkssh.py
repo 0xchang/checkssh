@@ -39,6 +39,8 @@ while True:
     output = result.stdout.decode("utf-8").strip()
     output = output.split('\n')
     for o in output:
+        if len(o.split()) != 10:
+            continue
         ip = o.split()[2]
         if check.get(ip) is None:
             check[ip] = 1
