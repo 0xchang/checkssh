@@ -4,6 +4,8 @@ import time
 import os
 import subprocess
 import logging
+import threading
+from datetime import datetime, timedelta
 
 logging.basicConfig(filename='banip.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -41,6 +43,25 @@ else:
 
 print('server start...')
 
+
+def unbanip(ip, port):
+    current_time = datetime.now()
+    two_hours_later = current_time + timedelta(hours=2)
+    print('IP {} will be unblocked at {}'.format(ip, two_hours_later))
+    time.sleep(3600 * 2)
+    try:
+        subprocess.run(
+            ["iptables", "-D", "INPUT", "-s", ip, "-p", "tcp", "--dport", port, "-j", "DROP"],
+            stdout=subprocess.PIPE)
+        if result.returncode == 0:
+            logging.info(
+                'Successfully unblocked IP {}'.format(ip))
+        else:
+            logging.error('Failed unblocked IP {}'.format(ip))
+    except Exception as e:
+        print(e)
+
+
 while True:
     check = dict()
     result = subprocess.run(["lastb"], stdout=subprocess.PIPE)
@@ -55,6 +76,8 @@ while True:
         else:
             check[ip] = check.get(ip) + 1
     for ip, count in check.items():
+        thread = threading.Thread(target=unbanip, args=(ip, port))
+        thread.start()
         if count > 10:
             result = subprocess.run(["iptables-save"], stdout=subprocess.PIPE)
             output = result.stdout.decode("utf-8").strip()
