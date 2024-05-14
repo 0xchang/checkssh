@@ -3,6 +3,9 @@ import sys
 import time
 import os
 import subprocess
+import logging
+
+logging.basicConfig(filename='banip.log', level=logging.INFO)
 
 current_system = platform.system()
 
@@ -55,5 +58,8 @@ while True:
                     ["iptables", "-A", "INPUT", "-s", ip, "-p", "tcp", "--dport", port, "-j", "DROP"],
                     stdout=subprocess.PIPE)
                 if result.returncode == 0:
-                    print('Successfully added {} to prohibit access to the {} port firewall rule.'.format(ip, port))
+                    logging.info(
+                        'Successfully added {} to prohibit access to the {} port firewall rule.'.format(ip, port))
+                else:
+                    logging.error('Failed added {} to prohibit access to the {} port firewall rule.'.format(ip, port))
     time.sleep(30)
