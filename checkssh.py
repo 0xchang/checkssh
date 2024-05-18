@@ -62,7 +62,7 @@ while True:
             output = result.stdout.decode("utf-8").strip()
             if ip not in output:
                 result = subprocess.run(
-                    ["iptables", "-A", "INPUT", "-s", ip, "-p", "tcp", "--dport", port, "-j", "DROP"],
+                    ["iptables", "-I", "INPUT", "-s", ip, "-p", "tcp", "--dport", port, "-j", "DROP"],
                     stdout=subprocess.PIPE)
                 if result.returncode == 0:
                     logging.info(
